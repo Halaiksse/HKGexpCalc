@@ -1,3 +1,4 @@
+from xmlrpc.server import list_public_methods
 import requests
 import time
 from datetime import date
@@ -23,6 +24,7 @@ worksheet.set_column(0, 0, 30)
 worksheet.set_column(1, 0, 30)
 worksheet.set_column(2, 0, 30)
 worksheet.set_column(3, 0, 30)
+worksheet.set_column(4, 0, 30)
 
 
 bold = workbook.add_format({'bold': True, 'bg_color': 'gray', 'align': 'center'})
@@ -33,18 +35,20 @@ default = workbook.add_format({'align': 'center'})
 worksheet.write('A1', 'Player Name', bold)
 worksheet.write('B1', 'Guild Rank', bold)
 worksheet.write('C1', 'Total Week Guild XP', bold)
+worksheet.write('D1', 'List of people under 25k', bold)
 
 
 name_slot = 1
 rank_slot = 1
 gxp_slot = 1
+list_slot = 1
 
 
 members = len(g['guild']['members'])
 
 
 
-#Function + Skip anyone above ET.
+
 for i in tqdm(range(len(g['guild']['members'])), desc="Progress"):
   uuid = g['guild']['members'][i]['uuid']
 
@@ -70,15 +74,21 @@ for i in tqdm(range(len(g['guild']['members'])), desc="Progress"):
 
   expHistory = expHistory = g['guild']['members'][i]['expHistory']
   expHistory = sum(expHistory.values())
-  
-  if (int(expHistory) >= 0 and int(expHistory) < 25000):
+  ExemptList = ["Officer", "Manager", "Guild Master"]
+
+  if (int(expHistory) >= 0 and int(expHistory) < 25000 and player_rank not in ExemptList):
     total_gxp_color = '#ff6666'
+    #Add to special list
+    list_slot = 1 + list_slot
+    total_list_spot = "D"+str(list_slot)
+    total_list_color = workbook.add_format({'bg_color': 'ff6666', 'align': 'center'})
+    worksheet.write(total_list_spot, name, total_list_color)
   else:
     total_gxp_color = '#00cc00'
 
-  ExemptList = ["Officer", "Manager", "Guild Master"]
+ 
   if (player_rank in ExemptList):
-    total_gxp_color = '#c91fff'
+    total_gxp_color = '#1240EC'
 
  
  
