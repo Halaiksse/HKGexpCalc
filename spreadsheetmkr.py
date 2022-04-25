@@ -9,12 +9,12 @@ from tqdm import tqdm
 
 api_key = input("Please enter your API key: ")
 time.sleep(1)
-## TODO: Dont ask, manually set HK instead.
+
 
 g = requests.get("https://api.hypixel.net/guild?key=" + api_key + "&name=Hypixel+Knights")
 g = g.json()
 
-## TODO: Add date in spreadsheet name / always set for HK
+
 today = date.today()
 today = today.isoformat()
 workbook = xlsxwriter.Workbook('spreadsheets/'+ today +'.xlsx')
@@ -23,22 +23,22 @@ worksheet.set_column(0, 0, 30)
 worksheet.set_column(1, 0, 30)
 worksheet.set_column(2, 0, 30)
 worksheet.set_column(3, 0, 30)
-#worksheet.set_column(4, 0, 30)
+
 
 bold = workbook.add_format({'bold': True, 'bg_color': 'gray', 'align': 'center'})
 
 default = workbook.add_format({'align': 'center'})
 
-#Remove D1
+
 worksheet.write('A1', 'Player Name', bold)
 worksheet.write('B1', 'Guild Rank', bold)
 worksheet.write('C1', 'Total Week Guild XP', bold)
-#worksheet.write('D1', 'Join Date', bold)
+
 
 name_slot = 1
 rank_slot = 1
 gxp_slot = 1
-#join_slot = 1
+
 
 members = len(g['guild']['members'])
 
@@ -62,27 +62,27 @@ for i in tqdm(range(len(g['guild']['members'])), desc="Progress"):
 
   gxp_slot = 1 + gxp_slot
   total_gxp_slot = "C"+str(gxp_slot)
-  #Remove
-  #join_slot = 1 + join_slot
-  #total_join_slot = "D"+str(join_slot)
+  
+  
+  
 
 
 
   expHistory = expHistory = g['guild']['members'][i]['expHistory']
   expHistory = sum(expHistory.values())
-  #CHNG For 0 to < 25k alert, above is green.
-  if (int(expHistory) >= 0):
+  
+  if (int(expHistory) >= 0 and int(expHistory) < 25000):
     total_gxp_color = '#ff6666'
-  if (int(expHistory) >= 10000):
-    total_gxp_color = '#ffff66'
-  if (int(expHistory) >= 100000):
-    total_gxp_color = '#33ff33'
-  if (int(expHistory) >= 200000):
+  else:
     total_gxp_color = '#00cc00'
 
-  join_date = g['guild']['members'][i]['joined']
-  join_date = join_date/1000
-  join_date = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime(join_date))
+  ExemptList = ["Officer", "Manager", "Guild Master"]
+  if (player_rank in ExemptList):
+    total_gxp_color = '#c91fff'
+
+ 
+ 
+ 
 
 
   expHistory = "{:,}".format(sum(g['guild']['members'][i]['expHistory'].values()))
@@ -91,7 +91,7 @@ for i in tqdm(range(len(g['guild']['members'])), desc="Progress"):
   worksheet.write(total_name_slot, name, default)
   worksheet.write(total_rank_slot, player_rank, default)
   worksheet.write(total_gxp_slot, expHistory, total_gxp_color,)
-  #worksheet.write(total_join_slot, join_date, default,)
+  
 
 
 
