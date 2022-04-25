@@ -1,34 +1,29 @@
 import requests
 import time
+from datetime import date
+import sys
 import xlsxwriter
 from tqdm import tqdm
 
 #Ask for AN API key from input instead.
-try:
-    with open('API_KEY') as inf:
-        api_key = inf.read()
-except FileNotFoundError:
-    api_key = input("Please enter your API key: ")
-    with open('API_KEY', 'w') as outf:
-        outf.write(api_key)
 
+api_key = input("Please enter your API key: ")
 time.sleep(1)
 ## TODO: Dont ask, manually set HK instead.
-guild = input("ENTER A GUILD NAME: ")
 
-g = requests.get("https://api.hypixel.net/guild?key=" + api_key + "&name=" + guild)
+g = requests.get("https://api.hypixel.net/guild?key=" + api_key + "&name=Hypixel+Knights")
 g = g.json()
 
-#One spreadsheet for everyone and one spreadsheet for < 25k gexp.
-
 ## TODO: Add date in spreadsheet name / always set for HK
-workbook = xlsxwriter.Workbook('spreadsheets/'+guild+'.xlsx')
+today = date.today()
+today = today.isoformat()
+workbook = xlsxwriter.Workbook('spreadsheets/'+ today +'.xlsx')
 worksheet = workbook.add_worksheet()
 worksheet.set_column(0, 0, 30)
 worksheet.set_column(1, 0, 30)
 worksheet.set_column(2, 0, 30)
 worksheet.set_column(3, 0, 30)
-worksheet.set_column(4, 0, 30)
+#worksheet.set_column(4, 0, 30)
 
 bold = workbook.add_format({'bold': True, 'bg_color': 'gray', 'align': 'center'})
 
@@ -38,12 +33,12 @@ default = workbook.add_format({'align': 'center'})
 worksheet.write('A1', 'Player Name', bold)
 worksheet.write('B1', 'Guild Rank', bold)
 worksheet.write('C1', 'Total Week Guild XP', bold)
-worksheet.write('D1', 'Join Date', bold)
+#worksheet.write('D1', 'Join Date', bold)
 
 name_slot = 1
 rank_slot = 1
 gxp_slot = 1
-join_slot = 1
+#join_slot = 1
 
 members = len(g['guild']['members'])
 
@@ -68,8 +63,8 @@ for i in tqdm(range(len(g['guild']['members'])), desc="Progress"):
   gxp_slot = 1 + gxp_slot
   total_gxp_slot = "C"+str(gxp_slot)
   #Remove
-  join_slot = 1 + join_slot
-  total_join_slot = "D"+str(join_slot)
+  #join_slot = 1 + join_slot
+  #total_join_slot = "D"+str(join_slot)
 
 
 
@@ -96,7 +91,7 @@ for i in tqdm(range(len(g['guild']['members'])), desc="Progress"):
   worksheet.write(total_name_slot, name, default)
   worksheet.write(total_rank_slot, player_rank, default)
   worksheet.write(total_gxp_slot, expHistory, total_gxp_color,)
-  worksheet.write(total_join_slot, join_date, default,)
+  #worksheet.write(total_join_slot, join_date, default,)
 
 
 
