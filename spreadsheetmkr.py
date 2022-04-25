@@ -78,7 +78,7 @@ for i in tqdm(range(len(g['guild']['members'])), desc="Progress"):
 
   if (int(expHistory) >= 0 and int(expHistory) < 25000 and player_rank not in ExemptList):
     total_gxp_color = '#ff6666'
-    #Add to special list
+    #Make that into a function (Func ecrit + check hono/horus insurance)
     list_slot = 1 + list_slot
     total_list_spot = "D"+str(list_slot)
     total_list_color = workbook.add_format({'bg_color': 'ff6666', 'align': 'center'})
