@@ -54,10 +54,10 @@ def addToNaughtyList():
   total_list_spot = "D"+str(list_slot)
   total_list_color = workbook.add_format({'bg_color': 'ff6666', 'align': 'center'}) #Format to red bg for list cell
   worksheet.write(total_list_spot, name, total_list_color)
-  
-  
 
-def ColorSelector(list_slot):
+
+
+def ColorSelector(list_slot, p_uuid):
   expHistory = expHistory = g['guild']['members'][i]['expHistory']
   expHistory = sum(expHistory.values())
   ExemptList = ["Officer", "Manager", "Guild Master"] # gonna add another list of players w horus insurance/hono later using UUID scan.
@@ -67,26 +67,35 @@ def ColorSelector(list_slot):
   else:
     total_gxp_color = '#00cc00' #green
   #Turn back to blue if exempted
-  tempColor = checkExemptions(ExemptList)
+  tempColor = checkExemptions(ExemptList, p_uuid)
   #check if flag triggered or not
   if (tempColor != 1):
     total_gxp_color = tempColor
   return total_gxp_color
 
-def checkExemptions(Exemptions):
+def checkExemptions(Exemptions, PLAYER_UUID):
   #Flag if exemption not detected
   endColor = 1
-  if (player_rank in Exemptions):
+  #SpecialExempts = Hono/Horus insurance txt file translated to list
+  #Simple read & input to list
+  SpecialExempts = []
+  for line in open ('hono.txt', 'r').readlines():
+      SpecialExempts.append(line.strip())
+  #Add to existing list
+  for line in open ('insurance.txt', 'r').readlines():
+      SpecialExempts.append(line.strip())
+  if (player_rank in Exemptions or PLAYER_UUID in SpecialExempts):
     endColor = '#1240EC' #blue
+
   return endColor
 
-  
+
 
 
 for i in tqdm(range(len(g['guild']['members'])), desc="Progress"):
   #Get member name, Hypixel API only gives UUIDs
   uuid = g['guild']['members'][i]['uuid']
- 
+
   x = requests.get("https://playerdb.co/api/player/minecraft/" + uuid)
   x = x.json()
   name = x['data']['player']['username']
@@ -102,14 +111,14 @@ for i in tqdm(range(len(g['guild']['members'])), desc="Progress"):
   gxp_slot = 1 + gxp_slot
   total_gxp_slot = "C"+str(gxp_slot)
   # Select which color to apply to the gxp amount cells
-  textColor = ColorSelector(list_slot)
-  # Sets the color of gxp amount cells & the values     
+  textColor = ColorSelector(list_slot, uuid)
+  # Sets the color of gxp amount cells & the values
   expHistory = "{:,}".format(sum(g['guild']['members'][i]['expHistory'].values()))
   total_gxp_color = workbook.add_format({'bg_color': textColor, 'align': 'center'})
   worksheet.write(total_name_slot, name, default)
   worksheet.write(total_rank_slot, player_rank, default)
   worksheet.write(total_gxp_slot, expHistory, total_gxp_color,)
-  
+
 
 
 
